@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sign Verification - Digital Signature System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background: linear-gradient(to right, #f4f4f9, #dfe9f3);
+        }
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .form-label {
+            font-weight: 600;
+        }
+        .message-box {
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        .valid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .invalid {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card p-5 mx-auto" style="max-width: 600px;">
+        <h2 class="mb-4 text-center text-primary">
+            <i class="fas fa-file-signature me-2"></i>Sign Verification
+        </h2>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="signVerifyTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if active_tab == 'sign' %}active{% endif %}" id="sign-tab" data-bs-toggle="tab" data-bs-target="#sign" type="button" role="tab" aria-controls="sign" aria-selected="true">
+                    Sign File
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if active_tab == 'verify' %}active{% endif %}" id="verify-tab" data-bs-toggle="tab" data-bs-target="#verify" type="button" role="tab" aria-controls="verify" aria-selected="false">
+                    Verify Signature
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="signVerifyTabContent">
+            <!-- Sign File Form -->
+            <div class="tab-pane fade {% if active_tab == 'sign' %}show active{% endif %}" id="sign" role="tabpanel" aria-labelledby="sign-tab">
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="sign" />
+                    <div class="mb-3">
+                        <label class="form-label">Upload File to Sign (Max: 5MB):</label>
+                        <input type="file" class="form-control" name="file" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Enter Secret Key:</label>
+                        <input type="password" class="form-control" name="key" placeholder="Secret Key" required />
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-pen-nib me-2"></i>Generate Signature
+                    </button>
+                </form>
+
+                {% if sign_download %}
+                <div class="alert alert-success mt-4 text-center">
+                    ✅ Signature file created!<br>
+                    <a class="btn btn-outline-success mt-2" href="{{ sign_download }}" download>
+                        <i class="fas fa-download me-2"></i>Download .sig File
+                        
+
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Verify Signature Form -->
+            <div class="tab-pane fade {% if active_tab == 'verify' %}show active{% endif %}" id="verify" role="tabpanel" aria-labelledby="verify-tab">
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="verify" />
+                    <div class="mb-3">
+                        <label class="form-label">Upload Original File:</label>
+                        <input type="file" class="form-control" name="file" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Upload Signature (.sig) File:</label>
+                        <input type="file" class="form-control" name="signature" accept=".sig" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-check-circle me-2"></i>Verify Signature
+                    </button>
+                </form>
+            </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              {% if category == 'sign' %}
+                <div class="message-box valid mt-3" aria-live="polite">
+                  {{ message }}
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+    </div>
+
+        <div class="mt-4 text-center">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary me-2">Back to Menu</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
